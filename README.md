@@ -6,19 +6,19 @@ On peut regarder ce jeu comme un jeu de cout moyen avec cout
 g(x)=(-N)^p(x).
 
 
-Hypothèse H_{2k}(G)
+Hypothèse H_{2k}(G):
 Dans le jeu G,
-MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k+1.
-MIN a une politique telle que la meilleure priorité paire est plus petite que 2k.
+- MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k+1.
+- MIN a une politique telle que la meilleure priorité paire est plus petite que 2k.
 
-Hypothèse H_{2k-1}(G)
+Hypothèse H_{2k-1}(G):
 Dans le jeu G,
-MIN a une politique telle que la meilleure priorité paire est plus petite que 2k.
-MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k-1.
+- MIN a une politique telle que la meilleure priorité paire est plus petite que 2k.
+- MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k-1.
 
 Au début H_{pmax+1} est vraie.
 
-Considérons un jeu G où on a des priorités >=2k, où l'on remplace toutes les priorités <2k sont egales à 0. Supposons que H_{2k}(G) est vraie: il existe une politique pour MIN telle que pour toute politique de MAX, la trajectoire va cycler vers des états de G de priorité nulle. On peut calculer cet ensemble A d'états avec 4n^3 iterations de VI (cf. Zwick et Paterson).
+Considérons un jeu G où on a des priorités >=2k, où l'on remplace toutes les priorités <2k par 0. Supposons que H_{2k}(G) est vraie: il existe une politique pour MIN telle que pour toute politique de MAX; ainsi, la trajectoire va cycler vers des états de G de priorité nulle. On peut calculer cet ensemble A d'états avec 4n^3 iterations de VI (cf. Zwick et Paterson) (ce sont pour lesquels la valeur T^{4n^3}0(x)=0).
 
 On peut maintenant considérer le jeu G' dans lequel on rajoute par rapport à G les priorités 2k-1. On peut résoudre G' restreint à A (c'est équivalent à un jeu de cout moyen avec valeurs 0 -1). Soit B l'ensemble des états gagnés par MIN.
 
@@ -32,3 +32,4 @@ Si le jeu G'' est non vide, on sait que H_{2k}(G'') est vraie. Donc on itère co
 
 
 
+PS: je pense qu'il est possible d'utiliser le même genre d'idées pour un jeu de cout moyen  (avec une technique de scaling, on devrait pouvoir mettre à jour la valeur d'un jeu dont on change la récompense R par R+delta avec 0<=delta<=1.
