@@ -5,6 +5,7 @@ On considère un jeu de parité avec p:X -> N, avec possible priorité nulle (ne
 On peut regarder ce jeu comme un jeu de cout moyen avec cout
 g(x)=(-N)^p(x).
 
+Pour tout jeu G, on note G_{>=k} une copie de G dans laquelle les priorités <k sont remplacées par 0.
 
 Hypothèse H_{2k}(G):
 Dans le jeu G,
@@ -16,19 +17,23 @@ Dans le jeu G,
 - MIN a une politique telle que la meilleure priorité paire est plus petite que 2k.
 - MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k-1.
 
-Au début H_{pmax+1} est vraie.
+Au début H_{pmax+1} est évidemment vraie (pour toute politique)
 
-Considérons un jeu G où on a des priorités >=2k, où l'on remplace toutes les priorités <2k par 0. Supposons que H_{2k}(G) est vraie: il existe une politique pour MIN telle que pour toute politique de MAX; ainsi, la trajectoire va cycler vers des états de G de priorité nulle. On peut calculer cet ensemble A d'états avec 4n^3 iterations de VI (cf. Zwick et Paterson) (ce sont pour lesquels la valeur T^{4n^3}0(x)=0).
+Supposons que H_{2k}(G) est vraie (le cas 2k+1 est analogue). Considérons un jeu G_0=G_{>=2k}. Il existe une politique nu pour MIN telle que pour toute politique de MAX, la valeur du jeu est 0; ainsi, la trajectoire va cycler indéfiniment vers des états de G de priorité nulle. On peut calculer nu et cet ensemble A d'états avec O(n^3) iterations de VI (cf. Zwick et Paterson) (les états de A sont pour lesquels la valeur T^{4n^3}0(x)=0).
 
-On peut maintenant considérer le jeu G' dans lequel on rajoute par rapport à G les priorités 2k-1. On peut résoudre G' restreint à A (c'est équivalent à un jeu de cout moyen avec valeurs 0 -1). Soit B l'ensemble des états gagnés par MIN.
+On peut maintenant considérer le jeu G_1=G_{>=2k-1} (dans lequel on rajoute par rapport à G_0 les priorités 2k-1). On peut résoudre G_1 restreint à A (c'est équivalent à un jeu de cout moyen avec valeurs {0 -1}). Soit B l'ensemble des états gagnés par MIN.
 
-Si B est l'ensemble vide, alors on sait que MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k-1. Autrement dit, H_{k-1} est vraie (donc on peut itérer).
+Si B est l'ensemble vide, alors on sait que MAX a une politique telle que la meilleure priorité impaire est plus petite que 2k-1. Autrement dit, H_{k-1}(G} est vraie (donc on peut itérer avec 2k-1 avec G_0).
 
-Si B est non vide, on sait que dans G, MIN peut gagner sur C=1-Attr(B). On considère alors le jeu G''=G\C.
+Si B est non vide, on sait que dans G_0, MIN peut gagner sur C=1-Attr(B). On considère alors le jeu G_2=G\C.
 
-Si le jeu G'' est vide, alors c'est fini (on sait que MIN gagne le jeu G pour tout état initial).
+Si le jeu G_2 est vide, alors c'est fini (on sait que MIN gagne le jeu G_0 pour tout état initial).
 
-Si le jeu G'' est non vide, on sait que H_{2k}(G'') est vraie. Donc on itère comme au dessus avec G''.
+Si le jeu G_2 est non vide, on peut tester si H_{2k}(G_2) est vraie en calculant la politique optimale de MAX face à la politique nu de MIN. Si H_{2k}(G_2} n'est pas vraie, on sait que MIN gagne le jeu G_0 avec priorité 2k-1. Sinon on itère comme au dessus avec G_2 au lieu de G_0. A chaque étape, soit on termine, soit on réduit la taille du jeu considéré. Cela dure donc au plus n iterations.
+
+A chaque étape de la procédure ci-dessus, la priorité considérée diminue, donc on a au plus d étapes.
+
+Au final, on a au plus O(d n^4) étapes de VI, soit une complexité de O(d n^5 m). 
 
 
 
