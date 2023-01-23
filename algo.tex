@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage[utf8x]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{autonum}
+\usepackage{dsfont}
+\usepackage{stmaryrd}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+
+
+\def\1{{\mathds 1}}
+\def\G{{\cal G}}
+\def\C{{\cal C}}
+\def\V{{\cal V}}
+\def\Ent{\mathbb N}
+\def\R{\mathbb R}
+\def\N{\mathfrak N}
+\def\M{\mathfrak M}
+\def\greed{\mathfrak G}
+\newcommand{\suc}[1]{f(#1)}
+
+\def\={\stackrel{def}{=}}
+\newcommand{\intset}[1]{\llbracket #1 \rrbracket}
+\newcommand{\intpart}[1]{\lceil #1 \rceil}
+
+\begin{document}
+
+Consider a parity game $G$ on state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$.
+
+\paragraph{Algo 1}
+
+Consider the following algorithm that takes a game as input and update $W$
+\begin{enumerate}
+\item Let $p$ be the maximal priority
+\item Let $i=p \mod 2$ be the corresponding player.
+\item Let
+  \begin{align}
+    g(x) = (-1)^{\Omega(x)} \1_{\Omega(x)=p}
+  \end{align}
+  and
+  \begin{align}
+    T v = g + \max_\mu \min_\nu P_{\mu,\nu} v.
+  \end{align}
+  \item Compute $v=T^n 0$ 
+  \item Let $A = \{ x ; T^n0(x)=0 \}$
+  \item Let $B = (1-i)-Attr(A)$
+  \item Let $W(p) = G \backslash B$
+  \item Recursive call on game $G$ restricted to $A$
+  \item Propagate the values on $B$.
+\end{enumerate}
+
+
+\paragraph{Algo 2}
+
+Consider the Bellman operator $T$ of Puri's reduction.
+
+\begin{enumerate}
+\item Compute $v = T^n 0$.
+\item Compute $A=\{ x ; v(x)=-n \}$. If $A$ is not empty, then we know that the game is won with priority $1$ from $x$. So also from $1-Attr(A)$, which we can remove from the game.
+\item Compute $A=\{ x ; n^2-(n-1) \le v(x) \le n^3 \}$. If $A$ is not empty, then we know that the game is won with priority $2$ from $y$. So also from $0-Attr(B)$, which we can remove from the game.
+\item Compute $A=\{ x ; -n^4 \le v(x) \le -n^3+(n-1)n^2=n^2 \}$....
+\item Compute $A=\{ x ; n^4-(n-1)n^3 = -n^3 \le v(x) \le n^5 \}$....
+\item ...
+\end{enumerate}
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib} 
+
+\end{document}
