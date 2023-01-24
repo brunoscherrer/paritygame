@@ -1,1 +1,1 @@
-[An idea of algorithm for the Parity Game](https://github.com/brunoscherrer/paritygame/raw/main/algo.pdf)
+[An idea of algorithm for the Parity Game](https://github.com/brunoscherrer/paritygame/blob/main/algo.pdf)
