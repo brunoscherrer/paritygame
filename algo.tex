@@ -33,43 +33,69 @@
 
 \begin{document}
 
-Consider a parity game $G$ on state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$.
+\noindent Bruno Scherrer, bruno.scherrer@inria.fr, \today.
 
-\paragraph{Algo 1}
+~\\
 
-Consider the following algorithm that takes a game as input and update $W$
-\begin{enumerate}
-\item Let $p$ be the maximal priority
-\item Let $i=p \mod 2$ be the corresponding player.
-\item Let
+Consider a parity game $G$ between ADAM and EVE on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ADAM wants that among the priorities that appears infinitely often, the maximal one is odd, while EVE wants it to be even.
+
+I describe below a procedure that allows to identify a region of the state space that is won by one of the players. Removing the attractor set of this set for this player, and calling it repetitively allows to solve the whole problem.
+
+~\\
+
+Suppose for concreteness that we have a game $G$ of which the maximal priority $p$ is even (the odd case is similar).
+Consider the payoff function
+\begin{align}
+  \forall x,~~ g(x) = \1_{\Omega(x)=p},
+\end{align}
+and the Bellman operators associated to the corresponding payoff problem: for all $v \in \R^X$,
+\begin{align}
+  T_{\mu,\nu} v &= g + P_{\mu,\nu}v, \\
+  T_{\mu} v & = \min_\nu T_{\mu,\nu} v, \\
+  \tilde T_{\nu} v & = \max_\mu T_{\mu,\nu} v, \\
+   T v &= \max_\mu \min_\nu T_{\mu,\nu}v = \max_\mu T_\mu v = \min_\nu \tilde T_\nu v,
+\end{align}
+where $P_{\mu,\nu}$ is the deterministic transition matrix when players use the (positional) strategies $\mu$ and $\nu$.
+Let us solve the $n$-horizon problem, by computing
+$$
+v=T^n 0
+$$
+and identifying a set of policies $\mu_1,\dots,\mu_n$ and $\nu_1,\dots,\nu_n$ such that
+$$
+v = T_{\mu_1,\nu_1} \dots T_{\mu_n,\nu_n} 0.
+$$
+We have the following observation:
+\begin{lemma}
+  In the parity game $G$, the set of states from which EVE can force ADAM to \emph{only} visit states with priorities lower than $p$ is
+  A = \{ x ~;~ v(x)=0 \}.
+\end{lemma}
+\begin{proof}
+  First (the easier part), assume that for some state $x$, EVE has a strategy $\nu$ such that whatever ADAM does, the trajectory only visits states with priorities smaller than $p$. Then, in the $n$-horizon payoff game, this strategy only visit states with payoff $0$, and 
   \begin{align}
-    g(x) = (-1)^{\Omega(x)} \1_{\Omega(x)=p}
+   0 \le v(x) =  [T^n0](x) \le [(\tilde T_{\nu})^n 0](x) \le 0.
   \end{align}
-  and
+
+  Now, assume that we have a state $x$ such that $v(x)=0$. Against any (positional) strategy $\mu$ of ADAM, consider the trajectory $(x_0=x,x_1,\dots,x_n)$ induced if EVE plays with $\nu_1,\dots,\nu_n$. There necessarily exists $0 \le i<j\le n$ and a state $y \in X$ such that $x_i=x_j=y$. We have
   \begin{align}
-    T v = g + \max_\mu \min_\nu P_{\mu,\nu} v.
+    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} T^{n-j}0](x) \le [T^n0](x) = 0.
   \end{align}
-  \item Compute $v=T^n 0$ 
-  \item Let $A = \{ x ; T^n0(x)=0 \}$
-  \item Let $B = (1-i)-Attr(A)$
-  \item Let $W(p) = G \backslash B$
-  \item Recursive call on game $G$ restricted to $A$
-  \item Propagate the values on $B$.
-\end{enumerate}
+  Since all the payoffs are non-negative, we deduce that
+  \begin{align}
+    [T^{n-j}0](y)=0, \\
+    [T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} 0](y)=0, \\
+    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} 0](x)=0.
+  \end{align}
+  Thus, if EVE plays the infinite-horizon policy $\nu_1,\dots,\nu_{i-1}(\nu_i \dots \nu_{j-1})^\infty$ against ADAM playing $\mu$, then the infinite-horizon payoff of this play is $0$. In $G$, this means that from $x$, the priorities visited are all smaller than $p$.
+\end{proof}
+\begin{corollary}
+Let $G'$ be a clone of the game $G$ where all parities smaller than $p$ are changed to $p-1$. In the parity game $G'$, the winning region of EVE is $B = 1-Attr(A)$ (and the winning region of ADAM is $C=X \backslash B$).
+\end{corollary}
+If the set $C$ (of the above corrolary) is non empty, then we have found a region where ADAM can win with priority $p$.
+If $C$ is empty, we know that $A$ is non-empty.
+Furthermore, from any state $x \in A$, we know that EVE has a strategy such that ADAM will never be able to visit a state with priority $p$ (and also that ADAM cannot escape from $A$). We can therefore called recursively this procedure on the game $G$ restricted to $A$ (where the maximal priority is smaller than $p$).
 
+At every call, either one winning region (C) is found, or the maximal priority of the considered game decreases. When there is only one priority, it is necessary a winning region for the corresponding player. In other words this procedure finds a winning region in at most $n$ steps. 
 
-\paragraph{Algo 2}
-
-Consider the Bellman operator $T$ of Puri's reduction.
-
-\begin{enumerate}
-\item Compute $v = T^n 0$.
-\item Compute $A=\{ x ; v(x)=-n \}$. If $A$ is not empty, then we know that the game is won with priority $1$ from $x$. So also from $1-Attr(A)$, which we can remove from the game.
-\item Compute $A=\{ x ; n^2-(n-1) \le v(x) \le n^3 \}$. If $A$ is not empty, then we know that the game is won with priority $2$ from $y$. So also from $0-Attr(B)$, which we can remove from the game.
-\item Compute $A=\{ x ; -n^4 \le v(x) \le -n^3+(n-1)n^2=n^2 \}$....
-\item Compute $A=\{ x ; n^4-(n-1)n^3 = -n^3 \le v(x) \le n^5 \}$....
-\item ...
-\end{enumerate}
 
 
 
