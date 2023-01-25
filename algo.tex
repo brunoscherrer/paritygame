@@ -63,13 +63,13 @@ The introduction of the payoff game is motivated by the following observations:
 \begin{lemma}
   In the parity game $G$,
   \begin{enumerate}
-  \item The set of states from which EVEN can force ODD to visit states with priority $p$ infinitely often (and thus win) is $\{ x ~;~ T^{n(n+1)}0(x) \ge n \}$ ;
-  \item The set of states from which ODD can force EVEN to \emph{only} visit states with priorities lower than $p$ is $\{ x ~;~ T^k 0(x)=0 \}$ for any $k \ge n$.
+  \item The set of states from which EVEN can force ODD to visit states with priority $p$ infinitely often (and thus win) is $\{ x ~;~ [T^{n^2}0](x) \ge n \}$ ;
+  \item The set of states from which ODD can force EVEN to \emph{only} visit states with priorities lower than $p$ is $\{ x ~;~ [T^k 0](x)=0 \}$ for any $k \ge n$.
   \item From any state $x$ such that $T^k 0(x)>0$, EVEN has a strategy that allows to visit at least one state with priority $p$ in the next $k$ steps (and consequently, if ODD can force EVEN to visit states with priorities $p$ only a finite number times, then the play must reach $C$ in finite time and stay in $C$ forever). 
   \end{enumerate}
 \end{lemma}
 \begin{proof}  
-  Let us begin by the first item. If from state $x$, EVEN can force ODD to visit states with priority $p$ infinitely often, EVEN can force to visit such states at least once every $n$ steps; on a trajectory of length $n(n+1)$, then states with priority $p$ are visited at least $n$ times. And thus on the payoff game, $T^{n(n+1)}0(x) \ge n$. If from state $x$, ODD can prevent EVEN from visiting states with priority $p$ infinitely often, this means that ODD has a strategy such that against any policy of EVEN, there is a path of length at most $n-1$ followed by a trajectory that only visits states with priority smaller than $p$. On the payoff game, this means that $T^{n(n+1)}0(x) < n$.
+  Let us begin by the first item. If from state $x$, EVEN can force ODD to visit states with priority $p$ infinitely often, EVEN can force to visit such states at least once every $n$ steps; on a trajectory of length $n^2$, then states with priority $p$ are visited at least $n$ times. And thus on the payoff game, $[T^{n^2}0](x) \ge n$. If from state $x$, ODD can prevent EVEN from visiting states with priority $p$ infinitely often, this means that ODD has a strategy such that against any policy of EVEN, there is a path of length at most $n-1$ followed by a trajectory that only visits states with priority smaller than $p$. On the payoff game, this means that $[T^{n^2}0](x) < n$.
 
   Now let us consider the second item.
   First (the easier part), assume that for some state $x$, ODD has a strategy $\nu$ such that whatever EVEN does, the trajectory only visits states with priorities smaller than $p$. Then, in the $m$-horizon payoff game for any $m \ge n$, this strategy forces the trajectory to only visit states with payoff $0$, and thus:
@@ -103,14 +103,14 @@ The introduction of the payoff game is motivated by the following observations:
 \paragraph{Step 1.}
 Compute the set
 \begin{align}
-  A = \{ x ~;~ T^{n(n+1)} 0(x) \ge n \}.
+  A = \{ x ~;~ [T^{n^2} 0](x) \ge n \}.
 \end{align}
-From any state of $A$, we know that the game is won by EVEN. If $A=X$, EVEN wins from all states, and we can terminate. Otherwise define $B=X \backslash A$ and proceed to Step 2.
+From any state of $A$, we know (by the Lemma) that the game is won by EVEN. If $A=X$, EVEN wins from all states, and we can terminate. Otherwise define $B=X \backslash A$ and proceed to Step 2.
 
 \paragraph{Step 2.}
 Consider the game $G_B$ restricted to $B$. For this game and its associated payoff game, compute
 \begin{align}
-C = \{ x ~;~ T^n(x) = 0 \}.
+C = \{ x ~;~ [T^n0](x) = 0 \}.
 \end{align}
 On $G_B$, ODD can prevent EVEN from  visiting states with priorities $p$ infinitely often. Thus, necessarily $C \neq \emptyset$. Consider $G_C$ restriced to $C$. Solve recursively $G_C$ (observe that this game only has priorities smaller than $p$).
 
