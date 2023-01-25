@@ -37,9 +37,11 @@
 
 ~\\
 
-Consider a parity game $G$ between ADAM (or Player 0) and EVE (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ADAM wants that among the priorities that appears infinitely often, the maximal one is odd, while EVE wants it to be even.
+Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ODD wants that among the priorities that appears infinitely often, the maximal one is odd, while EVEN wants it to be even.
 
-I describe below a procedure that allows to identify a region of the state space that is won by one of the players. Removing the attractor set of this set for this player, and calling it repetitively allows to solve the whole problem.
+~ \\
+
+I describe below a recursive procedure to solve this problem. Then I argue that the number of recursive calls is at most $n$.
 
 ~\\
 
@@ -56,46 +58,83 @@ and the Bellman operators associated to the corresponding payoff problem: for al
    T v &= \max_\mu \min_\nu T_{\mu,\nu}v = \max_\mu T_\mu v = \min_\nu \tilde T_\nu v,
 \end{align}
 where $P_{\mu,\nu}$ is the deterministic transition matrix when players use the (positional) strategies $\mu$ and $\nu$.
-Let us solve the $n$-horizon problem, by computing
-$$
-v=T^n 0
-$$
-and identifying a set of policies $\mu_1,\dots,\mu_n$ and $\nu_1,\dots,\nu_n$ such that
-$$
-v = T_{\mu_1,\nu_1} \dots T_{\mu_n,\nu_n} 0.
-$$
-We have the following observation:
-\begin{lemma}
-  In the parity game $G$, the set of states from which EVE can force ADAM to \emph{only} visit states with priorities lower than $p$ is
-  A = \{ x ~;~ v(x)=0 \}.
-\end{lemma}
-\begin{proof}
-  First (the easier part), assume that for some state $x$, EVE has a strategy $\nu$ such that whatever ADAM does, the trajectory only visits states with priorities smaller than $p$. Then, in the $n$-horizon payoff game, this strategy only visit states with payoff $0$, and 
-  \begin{align}
-   0 \le v(x) =  [T^n0](x) \le [(\tilde T_{\nu})^n 0](x) \le 0.
-  \end{align}
 
-  Now, assume that we have a state $x$ such that $v(x)=0$. Against any (positional) strategy $\mu$ of ADAM, consider the trajectory $(x_0=x,x_1,\dots,x_n)$ induced if EVE plays with $\nu_1,\dots,\nu_n$. There necessarily exists $0 \le i<j\le n$ and a state $y \in X$ such that $x_i=x_j=y$. We have
+The introduction of the payoff game is motivated by the following observations:
+\begin{lemma}
+  In the parity game $G$,
+  \begin{enumerate}
+  \item The set of states from which EVEN can force ODD to visit states with priority $p$ infinitely often (and thus win) is $\{ x ~;~ T^{n(n+1)}0(x) \ge n \}$ ;
+  \item The set of states from which ODD can force EVEN to \emph{only} visit states with priorities lower than $p$ is $\{ x ~;~ T^k 0(x)=0 \}$ for any $k \ge n$.
+  \item From any state $x$ such that $T^k 0(x)>0$, EVEN has a strategy that allows to visit at least one state with priority $p$ in the next $k$ steps (and consequently, if ODD can force EVEN to visit states with priorities $p$ only a finite number times, then the play must reach $C$ in finite time and stay in $C$ forever). 
+  \end{enumerate}
+\end{lemma}
+\begin{proof}  
+  Let us begin by the first item. If from state $x$, EVEN can force ODD to visit states with priority $p$ infinitely often, EVEN can force to visit such states at least once every $n$ steps; on a trajectory of length $n(n+1)$, then states with priority $p$ are visited at least $n$ times. And thus on the payoff game, $T^{n(n+1)}0(x) \ge n$. If from state $x$, ODD can prevent EVEN from visiting states with priority $p$ infinitely often, this means that ODD has a strategy such that against any policy of EVEN, there is a path of length at most $n-1$ followed by a trajectory that only visits states with priority smaller than $p$. On the payoff game, this means that $T^{n(n+1)}0(x) < n$.
+
+  Now let us consider the second item.
+  First (the easier part), assume that for some state $x$, ODD has a strategy $\nu$ such that whatever EVEN does, the trajectory only visits states with priorities smaller than $p$. Then, in the $m$-horizon payoff game for any $m \ge n$, this strategy forces the trajectory to only visit states with payoff $0$, and thus:
   \begin{align}
-    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} T^{n-j}0](x) \le [T^n0](x) = 0.
+   0 \le [T^m 0](x) \le [(\tilde T_{\nu})^m 0](x) \le 0,
+  \end{align}
+  i.e. $T^m 0(x)=0$.
+
+  Now, assume that we have a state $x$ such that $T^m(x)=0$ with $m \ge n$. Let $(\nu_1,\dots,\nu_m)$ be any sequence of stratregies such that
+  \begin{align}
+  T^m 0 = \tilde T_{\nu_1} \dots \tilde T_{\nu_m} 0.
+  \end{align}
+  Against any (positional) strategy $\mu$ of EVEN, consider the trajectory $(x_0=x,x_1,\dots,x_n)$ induced if ODD plays with $\nu_1,\dots,\nu_n$. There necessarily exists $0 \le i<j\le n$ and a state $y \in X$ such that $x_i=x_j=y$. We have
+  \begin{align}
+    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} T^{m-j}0](x) \le [T^m 0](x) = 0.
   \end{align}
   Since all the payoffs are non-negative, we deduce that
   \begin{align}
-    [T^{n-j}0](y)=0, \\
+    [T^{m-j}0](y)=0, \\
     [T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} 0](y)=0, \\
     [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} 0](x)=0.
   \end{align}
-  Thus, if EVE plays the infinite-horizon policy $\nu_1,\dots,\nu_{i-1}(\nu_i \dots \nu_{j-1})^\infty$ against ADAM playing $\mu$, then the infinite-horizon payoff of this play is $0$. In $G$, this means that from $x$, the priorities visited are all smaller than $p$.
+  Thus, if ODD plays the infinite-horizon policy $\nu_1,\dots,\nu_{i-1}(\nu_i \dots \nu_{j-1})^\infty$ against EVEN playing $\mu$, then the infinite-horizon payoff of this play is $0$. In $G$, this means that from $x$, the priorities visited are all smaller than $p$.
+
+  The final item is obvious by considering the strategy $\mu_1,\dots,\mu_k$ such that
+  \begin{align}
+    T^k 0 = T_{\mu_1} \dots T_{\mu_k} 0.
+  \end{align}
 \end{proof}
-\begin{corollary}
-Let $G'$ be a clone of the game $G$ where all parities smaller than $p$ are changed to $p-1$. In the parity game $G'$, the winning region of EVE is $B = 1-Attr(A)$ (and the winning region of ADAM is $C=X \backslash B$).
-\end{corollary}
-If the set $C$ (of the above corrolary) is non empty, then we have found a region where ADAM can win with priority $p$.
-If $C$ is empty, we know that $A$ is non-empty.
-Furthermore, from any state $x \in A$, we know that EVE has a strategy such that ADAM will never be able to visit a state with priority $p$ (and also that ADAM cannot escape from $A$). We can therefore called recursively this procedure on the game $G$ restricted to $A$ (where the maximal priority is smaller than $p$). 
 
-At every call, either one winning region (C) is found, or the maximal priority of the considered game decreases. When there is only one priority, it is necessary a winning region for the corresponding player. In other words this procedure finds a winning region in at most $n$ steps. 
+\paragraph{Step 1.}
+Compute the set
+\begin{align}
+  A = \{ x ~;~ T^n 0(x) \ge n \}, \\
+  B = A^c = \{ x ~;~ v(x) < n \}, \\
+  C = \{ x ~;~ v(x) = 0 \}
+\end{align}
+From any state of $A$, we know that the game is won by EVEN. If $A=X$, EVEN wins from all states, and we can terminate. Otherwise define $B=X \backslash A$ and proceed to Step 2.
 
+\paragraph{Step 2.}
+Consider the game $G_B$ restricted to $B$. For this game and its associated payoff game, compute
+\begin{align}
+C = \{ x ~;~ v(x) = 0 \}.
+\end{align}
+On $G_B$, EVEN cannot visit states with priorities $p$ infinitely often. Thus, $C \neq \emptyset$. Consider $G_C$ restriced to $C$. Solve recursively $G_C$ (observe that this game only has priorities smaller than $p$).
+
+Let $D \subset C$ be the states of $G_C$ that are won by ODD.
+
+If $D = \emptyset$, then the game $G_B$ is also completely known by EVEN (indeed, either ODD allows to force EVEN to reach and stay forever in $C$ and loses, or the play visits states of $B \backslash C$ infinitely often, from which EVEN can always get ). In such a case, we deduce that EVEN wins in $G_B$ from all states, and we can terminate. 
+
+If $D \neq \emptyset$, compute $E=1-Attr(D)$ in the game $G_B$. We know that in $G_B$, ODD can win from any state of $E$.
+
+If $E=B$, we can terminate. Otherwise, if $E \neq B$, then we loop to the beginning of Step 2 with $B$ replaced by $B \backslash E$ (observe that from states of $E \neq B$, it is the choices of EVEN that prevent ODD from reaching $D$, so ODD can still prevent EVEN from visiting states with priority $p$ infinitely often). 
+
+~\\
+
+To conclude, let us bound the number of calls $C(n)$ for a game of size $n$. Writing
+\begin{align}
+  I_c = \{ 1 \le k_1, \dots, k_c \le n ~;~ \sum_{i=1}^c k_c=n \},
+\end{align}
+We have $C(1)=1$ and
+\begin{align}
+  C(n) \le \max_c \max_{k_1,\dots,k_c} \sum_c C(k_c).
+\end{align}
+It is easy to prove by induction on $n$ that $C(n)\le n$.
 
 
 
