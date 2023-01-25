@@ -103,22 +103,20 @@ The introduction of the payoff game is motivated by the following observations:
 \paragraph{Step 1.}
 Compute the set
 \begin{align}
-  A = \{ x ~;~ T^n 0(x) \ge n \}, \\
-  B = A^c = \{ x ~;~ v(x) < n \}, \\
-  C = \{ x ~;~ v(x) = 0 \}
+  A = \{ x ~;~ T^{n(n+1)} 0(x) \ge n \}.
 \end{align}
 From any state of $A$, we know that the game is won by EVEN. If $A=X$, EVEN wins from all states, and we can terminate. Otherwise define $B=X \backslash A$ and proceed to Step 2.
 
 \paragraph{Step 2.}
 Consider the game $G_B$ restricted to $B$. For this game and its associated payoff game, compute
 \begin{align}
-C = \{ x ~;~ v(x) = 0 \}.
+C = \{ x ~;~ T^n(x) = 0 \}.
 \end{align}
-On $G_B$, EVEN cannot visit states with priorities $p$ infinitely often. Thus, $C \neq \emptyset$. Consider $G_C$ restriced to $C$. Solve recursively $G_C$ (observe that this game only has priorities smaller than $p$).
+On $G_B$, ODD can prevent EVEN from  visiting states with priorities $p$ infinitely often. Thus, necessarily $C \neq \emptyset$. Consider $G_C$ restriced to $C$. Solve recursively $G_C$ (observe that this game only has priorities smaller than $p$).
 
 Let $D \subset C$ be the states of $G_C$ that are won by ODD.
 
-If $D = \emptyset$, then the game $G_B$ is also completely known by EVEN (indeed, either ODD allows to force EVEN to reach and stay forever in $C$ and loses, or the play visits states of $B \backslash C$ infinitely often, from which EVEN can always get ). In such a case, we deduce that EVEN wins in $G_B$ from all states, and we can terminate. 
+If $D = \emptyset$, then the game $G_B$ is also completely known by EVEN (indeed, either ODD allows to force EVEN to reach and stay forever in $C$, and loses, or the play visits states of $B \backslash C$ infinitely often, from which EVEN can always reach a state with priority $p$). In such a case, we deduce that EVEN wins in $G_B$ from all states, and we can terminate. 
 
 If $D \neq \emptyset$, compute $E=1-Attr(D)$ in the game $G_B$. We know that in $G_B$, ODD can win from any state of $E$.
 
