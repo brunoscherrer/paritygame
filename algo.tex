@@ -17,17 +17,8 @@
 
 
 \def\1{{\mathds 1}}
-\def\G{{\cal G}}
-\def\C{{\cal C}}
-\def\V{{\cal V}}
-\def\Ent{\mathbb N}
+\def\N{\mathbb N}
 \def\R{\mathbb R}
-\def\N{\mathfrak N}
-\def\M{\mathfrak M}
-\def\greed{\mathfrak G}
-\newcommand{\suc}[1]{f(#1)}
-
-\def\={\stackrel{def}{=}}
 \newcommand{\intset}[1]{\llbracket #1 \rrbracket}
 \newcommand{\intpart}[1]{\lceil #1 \rceil}
 
@@ -41,101 +32,81 @@ Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a
 
 ~ \\
 
-I describe below a recursive procedure to solve this problem. Then I argue that the number of recursive calls is at most $n$.
-
-~\\
-
-Suppose for concreteness that we have a game $G$ of which the maximal priority $p$ is even (the odd case is similar).
-Consider the payoff function
+Consider the lexicographic order relation on $\N^2$:
 \begin{align}
-  \forall x,~~ g(x) = \1_{\Omega(x)=p},
+  (a,b) \le (a',b') & \Leftrightarrow a \le a' \mbox{ or }(a=a' \mbox{ and }b \le b' ),
 \end{align}
-and the Bellman operators associated to the corresponding payoff problem: for all $v \in \R^X$,
+the corresponding min/max/+/- operators.
+
+Consider the cost functions:
 \begin{align}
-  T_{\mu,\nu} v &= g + P_{\mu,\nu}v, \\
-  T_{\mu} v & = \min_\nu T_{\mu,\nu} v, \\
-  \tilde T_{\nu} v & = \max_\mu T_{\mu,\nu} v, \\
-   T v &= \max_\mu \min_\nu T_{\mu,\nu}v = \max_\mu T_\mu v = \min_\nu \tilde T_\nu v,
+  g_p = \1_{\Omega(x)=p}*(-1)^{\Omega(x)}.
 \end{align}
-where $P_{\mu,\nu}$ is the deterministic transition matrix when players use the (positional) strategies $\mu$ and $\nu$.
 
-The introduction of the payoff game is motivated by the following observations:
-\begin{lemma}
-  In the parity game $G$,
-  \begin{enumerate}
-  \item The set of states from which EVEN can force ODD to visit states with priority $p$ infinitely often (and thus win) is $\{ x ~;~ [T^{n^2}0](x) \ge n \}$ ;
-  \item The set of states from which ODD can force EVEN to \emph{only} visit states with priorities lower than $p$ is $\{ x ~;~ [T^k 0](x)=0 \}$ for any $k \ge n$.
-  \item From any state $x$ such that $T^k 0(x)>0$, EVEN has a strategy that allows to visit at least one state with priority $p$ in the next $k$ steps (and consequently, if ODD can force EVEN to visit states with priorities $p$ only a finite number times, then the play must reach $C$ in finite time and stay in $C$ forever). 
-  \end{enumerate}
-\end{lemma}
-\begin{proof}  
-  Let us begin by the first item. If from state $x$, EVEN can force ODD to visit states with priority $p$ infinitely often, EVEN can force to visit such states at least once every $n$ steps; on a trajectory of length $n^2$, then states with priority $p$ are visited at least $n$ times. And thus on the payoff game, $[T^{n^2}0](x) \ge n$. If from state $x$, ODD can prevent EVEN from visiting states with priority $p$ infinitely often, this means that ODD has a strategy such that against any policy of EVEN, there is a path of length at most $n-1$ followed by a trajectory that only visits states with priority smaller than $p$. On the payoff game, this means that $[T^{n^2}0](x) < n$.
-
-  Now let us consider the second item.
-  First (the easier part), assume that for some state $x$, ODD has a strategy $\nu$ such that whatever EVEN does, the trajectory only visits states with priorities smaller than $p$. Then, in the $m$-horizon payoff game for any $m \ge n$, this strategy forces the trajectory to only visit states with payoff $0$, and thus:
-  \begin{align}
-   0 \le [T^m 0](x) \le [(\tilde T_{\nu})^m 0](x) \le 0,
-  \end{align}
-  i.e. $T^m 0(x)=0$.
-
-  Now, assume that we have a state $x$ such that $T^m(x)=0$ with $m \ge n$. Let $(\nu_1,\dots,\nu_m)$ be any sequence of stratregies such that
-  \begin{align}
-  T^m 0 = \tilde T_{\nu_1} \dots \tilde T_{\nu_m} 0.
-  \end{align}
-  Against any (positional) strategy $\mu$ of EVEN, consider the trajectory $(x_0=x,x_1,\dots,x_n)$ induced if ODD plays with $\nu_1,\dots,\nu_n$. There necessarily exists $0 \le i<j\le n$ and a state $y \in X$ such that $x_i=x_j=y$. We have
-  \begin{align}
-    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} T^{m-j}0](x) \le [T^m 0](x) = 0.
-  \end{align}
-  Since all the payoffs are non-negative, we deduce that
-  \begin{align}
-    [T^{m-j}0](y)=0, \\
-    [T_{\mu,\nu_i} \dots T_{\mu,\nu_{j-1}} 0](y)=0, \\
-    [T_{\mu,\nu_1} \dots T_{\mu,\nu_{i-1}} 0](x)=0.
-  \end{align}
-  Thus, if ODD plays the infinite-horizon policy $\nu_1,\dots,\nu_{i-1}(\nu_i \dots \nu_{j-1})^\infty$ against EVEN playing $\mu$, then the infinite-horizon payoff of this play is $0$. In $G$, this means that from $x$, the priorities visited are all smaller than $p$.
-
-  The final item is obvious by considering the strategy $\mu_1,\dots,\mu_k$ such that
-  \begin{align}
-    T^k 0 = T_{\mu_1} \dots T_{\mu_k} 0.
-  \end{align}
-\end{proof}
-
-\paragraph{Step 1.}
-Compute the set
+Consider the following Bellman operators:
 \begin{align}
-  A = \{ x ~;~ [T^{n^2} 0](x) \ge n \}.
+  T_{p,\mu,\nu} (v,w) &= (v, g_p + P_{\mu,\nu} w )\\
+  T_{p}(v,w) &= \max_\mu \min_\nu T_{p,\mu,\nu}(v,w)
 \end{align}
-From any state of $A$, we know (by the Lemma) that the game is won by EVEN. If $A=X$, EVEN wins from all states, and we can terminate. Otherwise define $B=X \backslash A$ and proceed to Step 2.
 
-\paragraph{Step 2.}
-Consider the game $G_B$ restricted to $B$. For this game and its associated payoff game, compute
+Start with $v=(0,0,\dots,0)$.
+\begin{itemize}
+\item While there exists $x$ such that $v(x)=0$, do
+  \begin{itemize}
+    \item let $A=X$.
+    \item Repeat:
+      \begin{itemize}
+      \item Consider the game reduced to $A$ and the highest priority $p$.
+      \item Compute
+        \begin{align}
+          B = \{x ~;~ [(T_p)^n(v,0)](x)=(0,0) \}
+        \end{align}
+      \item If $B=\emptyset$, then set
+        \begin{align}
+          \forall x \in A,~ v(x)=p*(-1)^p
+        \end{align}
+        and break the repeat loop
+      \item Otherwise, let $A \leftarrow B$.
+      \end{itemize}
+  \end{itemize}
+\item Return $v$
+\end{itemize}
+
+\paragraph{Idea:} Consider priority $p$ belonging to Player $i=p \mod 2$ and a play on the sub-game $A_p$. There exists of policy for Player $i$ such that the only possibility for Player $1-i$ to avoid losing with priority $p$ on $A_p$ is to reach $A_{p-1}$ and stay in it forever. When this set is empty, it means that Player $i$ wins (with that policy) with priority $p$ on the set $A_p$, so we update the value consequently. When this set is non-empty, we know that Player $1-i$ has a policy such that Player $i$ cannot escape $A_{p-1}$, on which Player $i$ cannot win with priority $p$ (so from $A_{p-1}$, this is what Player $1-i$ wants to do).
+
+\newpage
+Decouple $v$ and $w$ (only useful on the first step) ?:
+
+Consider the following operators:
 \begin{align}
-C = \{ x ~;~ [T^n0](x) = 0 \}.
+  T_{p,\mu,\nu}w & = g_p + P_{\mu,\nu} w\\
+  T_{p}w & = \max_\mu \min_\nu T_{p,\mu,\nu}w\\
+  U_{\mu,\nu} v & = P_{\mu,\nu}v \\
+  U v & = \max_\mu \min_\nu U_{\mu,\nu}v.
 \end{align}
-On $G_B$, ODD can prevent EVEN from  visiting states with priorities $p$ infinitely often. Thus, necessarily $C \neq \emptyset$. Consider $G_C$ restriced to $C$. Solve recursively $G_C$ (observe that this game only has priorities smaller than $p$).
-
-Let $D \subset C$ be the states of $G_C$ that are won by ODD.
-
-If $D = \emptyset$, then the game $G_B$ is also completely known by EVEN (indeed, either ODD allows to force EVEN to reach and stay forever in $C$, and loses, or the play visits states of $B \backslash C$ infinitely often, from which EVEN can always reach a state with priority $p$). In such a case, we deduce that EVEN wins in $G_B$ from all states, and we can terminate. 
-
-If $D \neq \emptyset$, compute $E=1-Attr(D)$ in the game $G_B$. We know that in $G_B$, ODD can win from any state of $E$.
-
-If $E=B$, we can terminate. Otherwise, if $E \neq B$, then we loop to the beginning of Step 2 with $B$ replaced by $B \backslash E$ (observe that from states of $E \neq B$, it is the choices of EVEN that prevent ODD from reaching $D$, so ODD can still prevent EVEN from visiting states with priority $p$ infinitely often). 
-
-~\\
-
-To conclude, let us bound the number of calls $C(n)$ for a game of size $n$. Writing
-\begin{align}
-  I_c = \{ 1 \le k_1, \dots, k_c \le n ~;~ \sum_{i=1}^c k_c=n \},
-\end{align}
-We have $C(1)=1$ and
-\begin{align}
-  C(n) \le \max_c \max_{k_1,\dots,k_c} \sum_c C(k_c).
-\end{align}
-It is easy to prove by induction on $n$ that $C(n)\le n$.
 
 
-
+Start with $v=(0,0,\dots,0)$.
+\begin{itemize}
+\item Compute $w=U^n v$.
+  \begin{itemize}
+  \item Let $$A=\{ x ~;~ w(x)=0 \}.$$ If $A=\emptyset$, return $w$.
+    \item Repeat:
+      \begin{itemize}
+      \item Consider the game reduced to $A$ and the highest priority $p$ in it.
+      \item Compute
+        \begin{align}
+          B = \{x ~;~ [(T_p)^n 0)](x)=0 \}
+        \end{align}
+      \item If $B=\emptyset$, then set
+        \begin{align}
+          \forall x \in A,~ v(x)=p*(-1)^p
+        \end{align}
+        and break the repeat loop
+      \item Otherwise, let $A \leftarrow B$ and iterate.
+      \end{itemize}
+  \end{itemize}
+\end{itemize}
 
 \bibliographystyle{plain}
 \bibliography{biblio.bib} 
