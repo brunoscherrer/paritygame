@@ -138,7 +138,11 @@ class game:
 
     # ALGORITHM
     
-    def value_iteration(self, T, v, no_update=[], verbose=False):  # (standard) Value Iteration (for a payoff game) for T steps from 0
+    def value_iteration(self, T, verbose=False):  # (standard) Value Iteration (for a payoff game) for T steps from 0
+
+        v = dict()
+        for state in self.states:
+            v[state.nb]=0
 
         if verbose:
             print("Running Value Iteration")
@@ -149,26 +153,24 @@ class game:
             
             for state in self.states:
 
-                if state.nb not in no_update:
-                
-                    if state.player==0: # Even/Max
-                        y = state.next_states[0]
-                        q = float("-inf")
-                        for y2 in state.next_states:
-                            q2 = state.val + w[y2]
-                            if q2 >= q:
-                                y = y2
-                                q = q2
-                    else: # Odd/Min
-                        y = state.next_states[0]
-                        q = float("inf")
-                        for y2 in state.next_states:
-                            q2 = state.val + w[y2]
-                            if q2 <= q:
-                                y = y2
-                                q = q2
+                if state.player==0: # Even/Max
+                    y = state.next_states[0]
+                    q = float("-inf")
+                    for y2 in state.next_states:
+                        q2 = state.val + w[y2]
+                        if q2 >= q:
+                            y = y2
+                            q = q2
+                else: # Odd/Min
+                    y = state.next_states[0]
+                    q = float("inf")
+                    for y2 in state.next_states:
+                        q2 = state.val + w[y2]
+                        if q2 <= q:
+                            y = y2
+                            q = q2
 
-                    v[state.nb]=q
+                v[state.nb]=q
 
             if verbose:
                 print(t,"v=",v)
@@ -181,114 +183,77 @@ class game:
         if verbose:
             print("Let's find a winning region for the game")
             self.print()
+        
+        all_priorities = set ( [ state.val for state in self.states ] )
+        all_states = set( [ state.nb for state in self.states ] )
+        nb_states = len(all_states)
+        
+        p = max(all_priorities)
+        i = p%2
 
-        A = set( [ state.nb for state in self.states ] )
-        g = deepcopy(self)
+        # build the payoff game
+        g = deepcopy(self) 
+        for state in g.states:
+            if state.val==p:
+                state.val=1-2*i
+            else:
+                state.val=0
 
-        while(True):
+        if verbose:
+            print("One considers the following payoff game")
+            g.print()
 
-            nb_states = len(A)
-            all_priorities = set ( [ state.val for state in g.states ] )
-            
-            p = max(all_priorities)
-            i = p%2
-            
-            # build the payoff game
-            g2 = deepcopy(g) 
-            for state in g2.states:
-                if state.val==p:
-                    state.val=[1,-1][i]
-                else:
-                    state.val=0
+        # run n steps of value iteration
+        v = g.value_iteration(nb_states*(nb_states+1),verbose)
 
+        if verbose:
+            print("T^(n^2+n) 0 =",v)
+
+        A = set( [ state.nb for state in g.states if v[state.nb]==0 ] )
+
+        B = set( [ state.nb for state in g.states if abs(v[state.nb])<nb_states ] )
+
+        C = all_states - B
+
+        if verbose:
+            print("A=",A)
+            print("B=",B)
+            print("C=",C)
+
+        if C!=set():   # Player i wins (with parity p) on C
             if verbose:
-                print("One considers the following payoff game")
-                g2.print()
+                print("Found Region C=",C,"won by",players[i])
+            return C,i
 
-            # run nb_states steps of value iteration from v=0
-            v = dict()
-            for state in g2.states:
-                v[state.nb]=0
-            v = g2.value_iteration(nb_states*(nb_states+1),v,[],verbose)
-
-            if verbose:
-                print("T^(n^2+n) 0 =",v)
-
-            B = set( [ state.nb for state in g2.states if v[state.nb]==0 ] )
-            C = set( [ state.nb for state in g2.states if abs(v[state.nb])>=nb_states ] )
-            
-            if verbose:
-                print("B=",B)
-                print("C=",C)
-
-            if C!=set():  
-                return C,i,p
-                
-            # If C is empty, then B is necessarily not empty    #################################
-            #if B==set():   # Player i wins (with parity p) on A  #################################
-            #    return A,i,p    #################################
-
-            if verbose:
-                print(players[i],"cannot win on any subset of",A,"with priority",p,"by being forced to go to",B)
-
-            g = g.copy_and_remove(A - B) # restrict the game to B
-            A=B
-
+        if verbose:
+            print(players[i],"cannot win with priority",p)
+        
+        g2 = self.copy_and_remove( all_states - A ) # restrict the next game to A
+        return g2.find_winning_region(verbose)
         
 
         
     def solve(self, verbose=False):
 
-        all_states = set( [ state.nb for state in self.states ] )
-        nb_states = len(all_states)
+        W = [ set(), set() ]
         
-        # initialize v
-        v = dict()
-        for i in all_states:
-            v[i]=0
+        g = deepcopy(self)
 
-        while True:
-
-            # 1) Propagate non-zero values
-            
-            g = deepcopy(self)   
-            for state in g.states:
-                state.val=0
-            w = g.value_iteration(nb_states,v,[x for x in all_states if v[x]!=0],verbose)
-            
-            A = set( [ i for i in all_states if w[i]==0 ] )
-
-            if verbose:
-                print("w=",w)
-                print("A=",A)
-
-            if A==set():
-                
-                W = [ set(), set() ]
-                for i in all_states:
-                    if w[i]<0:
-                        W[1].add(i)
-                    else:
-                        W[0].add(i)
-
-                if verbose:
-                    print ("It is over: W=",W)
-
-                return(W)
-
-            # 2) Look for a winning region
-            
-            g2 = self.copy_and_remove(all_states-A) # g2 = game restricted to A
-            
-            A2,j,p = g2.find_winning_region(verbose)
-
-            for i in A2:   # update v consequently
-                v[i]=[1,-1][j]
-                
-            if verbose:
-                print("* Region A2=",A2,"is won by",players[j])
-                print("v=",v)
+        while len(g.states)>0:
         
+            C,i = g.find_winning_region(verbose)
+            D = g.attractor(i,C)
+
+            W[i]=W[i].union(D)
+            g = g.copy_and_remove(D)
+            
+            if verbose:
+                print("* Region D=",D,"is won by",players[i])
+                print("Resulting game to solve")
+                g.print()
+                print()
+        
+        return(W)
          
 
 
@@ -301,7 +266,7 @@ a=2
 d=n
 
 
-for i in range(10000):
+for i in range(571,10000):
 
     seed(i)
     g = game(n,a,d)
