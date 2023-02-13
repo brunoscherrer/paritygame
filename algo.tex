@@ -30,86 +30,8 @@
 
 Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ODD wants that among the priorities that appears infinitely often, the maximal one is odd, while EVEN wants it to be even.
 
-~ \\
 
-Consider the lexicographic order relation on $\N^2$:
-\begin{align}
-  (a,b) \le (a',b') & \Leftrightarrow a \le a' \mbox{ or }(a=a' \mbox{ and }b \le b' ),
-\end{align}
-the corresponding min/max/+/- operators.
-
-Consider the cost functions:
-\begin{align}
-  g_p = \1_{\Omega(x)=p}*(-1)^{\Omega(x)}.
-\end{align}
-
-Consider the following Bellman operators:
-\begin{align}
-  T_{p,\mu,\nu} (v,w) &= (v, g_p + P_{\mu,\nu} w )\\
-  T_{p}(v,w) &= \max_\mu \min_\nu T_{p,\mu,\nu}(v,w)
-\end{align}
-
-Start with $v=(0,0,\dots,0)$.
-\begin{itemize}
-\item While there exists $x$ such that $v(x)=0$, do
-  \begin{itemize}
-    \item let $A=X$.
-    \item Repeat:
-      \begin{itemize}
-      \item Consider the game reduced to $A$ and the highest priority $p$.
-      \item Compute
-        \begin{align}
-          B = \{x ~;~ [(T_p)^n(v,0)](x)=(0,0) \}
-        \end{align}
-      \item If $B=\emptyset$, then set
-        \begin{align}
-          \forall x \in A,~ v(x)=(-1)^p
-        \end{align}
-        and break the repeat loop
-      \item Otherwise, let $A \leftarrow B$.
-      \end{itemize}
-  \end{itemize}
-\item Return $v$
-\end{itemize}
-
-\paragraph{Idea:} Consider priority $p$ belonging to Player $i=p \mod 2$ and a play on the sub-game $A_p$. There exists of policy for Player $i$ such that the only possibility for Player $1-i$ to avoid losing with priority $p$ on $A_p$ is to reach $A_{p-1}$ and stay in it forever. When this set is empty, it means that Player $i$ wins (with that policy) with priority $p$ on the set $A_p$, so we update the value consequently. When this set is non-empty, we know that Player $1-i$ has a policy such that Player $i$ cannot escape $A_{p-1}$, on which Player $i$ cannot win with priority $p$ (so from $A_{p-1}$, this is what Player $1-i$ wants to do).
-
-\newpage
-Decouple $v$ and $w$ (only useful on the first step) ?:
-
-Consider the following operators:
-\begin{align}
-  T_{p,\mu,\nu}w & = g_p + P_{\mu,\nu} w\\
-  T_{p}w & = \max_\mu \min_\nu T_{p,\mu,\nu}w\\
-  U_{\mu,\nu} v & = P_{\mu,\nu}v \\
-  U v & = \max_\mu \min_\nu U_{\mu,\nu}v.
-\end{align}
-
-
-Start with $v=(0,0,\dots,0)$.
-\begin{itemize}
-\item Compute $w=U^n v$.
-  \begin{itemize}
-  \item Let $$A=\{ x ~;~ w(x)=0 \}.$$ If $A=\emptyset$, return $w$.
-    \item Repeat:
-      \begin{itemize}
-      \item Consider the game reduced to $A$ and the highest priority $p$ in it.
-      \item Compute
-        \begin{align}
-          B = \{x ~;~ [(T_p)^n 0)](x)=0 \}
-        \end{align}
-      \item If $B=\emptyset$, then set
-        \begin{align}
-          \forall x \in A,~ v(x)=(-1)^p
-        \end{align}
-        and break the repeat loop
-      \item Otherwise, let $A \leftarrow B$ and iterate.
-      \end{itemize}
-  \end{itemize}
-\end{itemize}
-
-
-Prendre la valeur $v(x)=p*(-1)^p$ ?
+Consider running the $n^2$-horizon problem, and optimizing the $d^th$ dimensional vector... The largest priority $p$ that occurs at most $n$ times from some state implies that the optimal priority in $x$ is $p$. We can find the largest priority of a parity game.
 
 \bibliographystyle{plain}
 \bibliography{biblio.bib} 
