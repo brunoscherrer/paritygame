@@ -8,6 +8,7 @@ from random import seed, randint, sample
 from copy import deepcopy
 import numpy as np
 
+
 inf = float("inf")
 
 players=['EVEN/MAX','ODD/MIN '] # player 0 is Eve (wants even), player 1 is Adam (wants odd)
@@ -37,7 +38,7 @@ class game:
         self.states = [ state( i, #  state number,
                                randint(0,1),   # random player
                                [randint(0, nb_states-1) for a in range(nb_actions)],  # random next states
-                               randint(0,nb_priorities-1) )   #  priority
+                               randint(1,nb_priorities) )   #  priority
                         for i in range(nb_states) ]
 
     def print(self):
@@ -153,12 +154,15 @@ class game:
         mp = max ( [ state.val for state in self.states ] )
         
         v=dict()
+        
         for i in all_states:
             v[i]=[0]*(mp+1)
+            
             
         for t in range(nb_states*nb_states):
 
             w = deepcopy(v)
+            w0 = deepcopy(v0)
             
             for state in self.states:
                 
@@ -167,15 +171,18 @@ class game:
                     for y2 in state.next_states:
                         q2 = deepcopy(w[y2])
                         i = state.val%2
-                        q2[mp-state.val] += 1-2*(state.val%2)
-                        if smaller(q,q2):
+                        z = 1-2*i
+                        q2[mp-state.val] += z
+                        if smaller2(q,q2, nb_states):
                             q = q2
                 else: # Odd/Min
                     q = [ inf ]*(mp+1)
                     for y2 in state.next_states:
                         q2 = deepcopy(w[y2])
-                        q2[mp-state.val] += 1-2*(state.val%2)
-                        if smaller(q2,q):
+                        i = state.val%2
+                        z = 1-2*i
+                        q2[mp-state.val] += z
+                        if smaller2(q2,q, nb_states):
                             q = q2
 
                 v[state.nb]=q
@@ -201,13 +208,17 @@ class game:
         w=dict()
         for i in all_states:
             for k in range(mp+1):
-                if v[i][k]>=nb_states:
-                    w[i]=( 1-2*((mp-k)%2) )*(mp-k)
+                if v[i][k] > 0:
+                    if v[i][k] >= nb_states:
+                        w[i]=(mp-k)*(1-2*((mp-k)%2))
+                    else:
+                        w[i]=0
                     break
 
         print("w=",w)
 
-        for t in range(2*nb_states):
+        
+        for t in range(nb_states):
 
             w2 = deepcopy(w)
             
@@ -227,15 +238,19 @@ class game:
             if verbose:
                 print(t,"w=",w)
 
-        
         W = [set(),set()]
         for i in all_states:
-            if w[i]>=0:
+            if w[i]>0:
                 W[0].add(i)
-            else:
+            elif w[i]<0:
                 W[1].add(i)
 
+        
+                
         return(W)
+
+        
+
 
 
     
@@ -246,7 +261,7 @@ a=2
 d=n
 
 
-for i in range(7609,10000):
+for i in range(0,10000):
 
     seed(i)
     g = game(n,a,d)

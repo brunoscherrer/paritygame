@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage[utf8x]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{autonum}
+\usepackage{dsfont}
+\usepackage{stmaryrd}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+
+
+\def\1{{\mathds 1}}
+\def\N{\mathbb N}
+\def\R{\mathbb R}
+\newcommand{\intset}[1]{\llbracket #1 \rrbracket}
+\newcommand{\intpart}[1]{\lceil #1 \rceil}
+
+\begin{document}
+
+\noindent Bruno Scherrer, bruno.scherrer@inria.fr, \today.
+
+~\\
+
+Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ODD wants that among the priorities that appears infinitely often, the maximal one is odd, while EVEN wants it to be even.
+
+
+Consider running the $n^2$-horizon problem, and optimizing the $d^th$ dimensional vector... The largest priority $p$ that occurs at most $n$ times from some state implies that the optimal priority in $x$ is $p$. We can find the largest priority of a parity game.
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib} 
+
+\end{document}

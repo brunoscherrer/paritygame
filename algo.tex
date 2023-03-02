@@ -19,6 +19,7 @@
 \def\1{{\mathds 1}}
 \def\N{\mathbb N}
 \def\R{\mathbb R}
+\def\G{{\cal G}}
 \newcommand{\intset}[1]{\llbracket #1 \rrbracket}
 \newcommand{\intpart}[1]{\lceil #1 \rceil}
 
@@ -30,8 +31,60 @@
 
 Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ODD wants that among the priorities that appears infinitely often, the maximal one is odd, while EVEN wants it to be even.
 
+Let us make the game a bit more precise: a player that wins wants to do so with the highest possible priority, while a player that loses wants to do so with the lowest possible priority. This specification can for instance be dealt by Puri's reduction to a mean-payoff game. We shall call the function that assigns the resulting priority to each starting state the optimal parity function $p_*:X \to \{1,\dots,d\}$. 
 
-Consider running the $n^2$-horizon problem, and optimizing the $d^th$ dimensional vector... The largest priority $p$ that occurs at most $n$ times from some state implies that the optimal priority in $x$ is $p$. We can find the largest priority of a parity game.
+Informally, we consider the following (recursive) algorithm that takes as input a game $\G$ of which the higher priority is $p$ corresponding to Player $i=p \mod 2$, and return the optimal parity $p_*:X \to \{1,\dots,d\}$.
+\begin{enumerate}
+\item In the game $\G$, compute the region $A$  that can be won with priority $p$ by Player $i$ and the region $B$ where Player $1-i$ can be sure that the hight priority occurring infinitely often is smaller than $p$.
+\item Consider the game $\G'$ reduced to $B$. By definition of $B$, for any stationary policy of Player $i$, there exists a stationary policy for Player $1-i$ such that after at most $n$ steps, the play only visit states with priority smaller that $p$. Compute the region $C$ from which whatever Player $i$ does, the play cannot reach a state with priority $p$ (to play optimally, Player $1-i$ must force the play to reach this region).
+\item Recursively solve the game $\G''$ reduced to $C$ (it only involves states with parity smaller than $p$) and obtain its optimal parity function $q_*:C \to \{1,\dots,p-1\}$. 
+\item On the game $G'$, compute the optimal priority function $r_*$ by propagating the parity function from $C$ to $B$: among the policies for Player $1-i$ that prevent Player $i$ from getting to any state of $B \backslash C$, compute the one that reaches a state $y \in C$ with the best priority $q_*(y)$ (against the best adversary played by Player $i$). 
+\item Return the optimal parity $p_*$ where $p_*(x)=p$ if $x \in A$ and $p_*(x)=r_*(x)$ if $x \in B$. 
+\end{enumerate}
+
+Let us a give a more formal description. The sets $A$, $B$ and $C$ (steps 1 and 2) can be computed as follows. Consider the cost function
+\begin{align}
+  g(x) & = \left\{
+  \begin{array}{ll}
+    (-1)^i & \mbox{if }\Omega(x)=p, \\
+    0 & \mbox{if }\Omega(x)<p.
+  \end{array}
+  \right.
+\end{align}
+Compute the solution of the $n^2$-horizon control problem with cost $g$ and terminal cost $0$, i.e. compute $v=T^{n^2}0$ where the operator $T$ is defined as follows for any $w$:
+\begin{align}
+  T w(x)= \left\{
+  \begin{array}{ll}
+    g(x) + max_{y \in \succ{x}} w(y)& \mbox{if $x$ is controlled by Player $i$} \\
+    g(x) + min_{y \in \succ{x}} w(y)& \mbox{if $x$ is controlled by Player $1-i$}
+  \end{array}
+  \right.
+\end{align}
+Then
+\begin{align}
+  A & = \{ x ~;~ |v(x)| \ge n \} \\
+  B & = \{ x ~;~ |v(x)| < n \} \\
+  C & = \{ x ~;~ |v(x)| = 0 \}.
+\end{align}
+For the propagation (step 4), we consider the following terminal cost function
+\begin{align}
+  h(x) =  \left\{
+  \begin{array}{ll}
+    q_*(x) & \mbox{if }x \in C, \\
+    (-1)^i \infty & \mbox{if }x \in B \backslash C.
+  \end{array}
+  \right.
+\end{align}
+In this terminal cost function, the values on $B$ are chosen to force Player $1-i$ to eventually terminate to any state of $B \backslash C$ (i.e. to be sure to terminate to some state of $C$).
+We finally compute $r_* = U^n h$ where the operator $U$ is defined as follows for any $w$:
+\begin{align}
+  U w(x)= \left\{
+  \begin{array}{ll}
+    max_{y \in \succ{x}} w(y)& \mbox{if $x$ is controlled by Player $i$} \\
+    min_{y \in \succ{x}} w(y)& \mbox{if $x$ is controlled by Player $1-i$}.
+  \end{array}
+  \right.
+\end{align}
 
 \bibliographystyle{plain}
 \bibliography{biblio.bib} 

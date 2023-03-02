@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage[utf8x]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{autonum}
+\usepackage{dsfont}
+\usepackage{stmaryrd}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+
+
+\def\1{{\mathds 1}}
+\def\N{\mathbb N}
+\def\R{\mathbb R}
+\newcommand{\intset}[1]{\llbracket #1 \rrbracket}
+\newcommand{\intpart}[1]{\lceil #1 \rceil}
+
+\begin{document}
+
+\noindent Bruno Scherrer, bruno.scherrer@inria.fr, \today.
+
+~\\
+
+Consider a parity game $G$ between EVEN (or Player 0) and ODD (or Player 1) on a state space $X=\{1,\dots,n\}$ with priority function $\Omega:X \to \{1,\dots,d\}$. On infinite plays, ODD wants that among the priorities that appears infinitely often, the maximal one is odd, while EVEN wants it to be even.
+
+Consider Puri's reduction to an optimal problem that makes the problem more well-defined in the sense that it implies the existence of an optimal priority: when a player loses, she loses with the smallest priority, and when she wins, it is with the higher priority possible.
+
+Consider some parity game $G$ for which we know that the optimal parity is either $p$ or $p+1$, and the problem of identifying the regions that can be won with priority $p+1$. (If we can solve this problem in polynomial time, then any parity game can be solved iteratively in polynomial time by considering the problems where all the priorities smaller than $p$ are made equal to $p$, for successive values of $p$).
+
+First, one can identify a region $A$ where both players want to reach and stay forever by computing the set such that $T^n 0 = 0$ in the problem where all priorities smaller than $p+1$ are made neutral.
+
+Then, one can solve the problem on $A$ (it is a 2 priority optimal problem).
+We have two regions: $B$ that is won with priority $p+1$, and $C$ that is won with priority $p$.
+
+Reduction to a bi-partie game ? (can we stay in the original problem).
+
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib} 
+
+\end{document}
